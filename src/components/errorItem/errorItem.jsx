@@ -1,8 +1,25 @@
 import { Alert, Image } from 'antd'
+import './errorItem.css'
+
+const httpCat = (codeErr) => {
+  return `https://http.cat/${codeErr}`
+}
 
 const ErrorItem = ({ error }) => {
   const { errorCode } = error
-  return <Alert message={errorCode.message} showIcon description={errorCode.stack} type="error"></Alert>
+
+  return (
+    <div className="error--item">
+      <Alert
+        style={{ marginBottom: '5px' }}
+        message={`Error ${errorCode.message}`}
+        description="We are already trying to fix it)"
+        showIcon
+        type="error"
+      />
+      <Image style={{ borderRadius: '1%' }} preview={false} src={httpCat(errorCode.message)} />
+    </div>
+  )
 }
 
 export default ErrorItem

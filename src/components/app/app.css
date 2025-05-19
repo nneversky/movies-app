@@ -8,3 +8,10 @@ body {
     display: flex;
     justify-content: center;
 }
+
+.offline--error {
+    transform: translateY(50px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
