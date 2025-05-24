@@ -9,6 +9,11 @@ export default class MoveApp {
     return await res.json()
   }
 
+  async getGenreList() {
+    const listGenre = await fetch(`${this._baseUrl}/genre/movie/list?language=en?&api_key=${this._APIkey}`)
+    return await listGenre.json()
+  }
+
   searchImg(url) {
     return `${this._baseUrlImg}${url}`
   }

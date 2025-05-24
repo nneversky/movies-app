@@ -18,6 +18,7 @@ export default class App extends Component {
     page: { currentPage: 1, totalPages: null },
     showPagination: false,
     text: null,
+    genreList: null,
   }
 
   componentDidMount() {
@@ -55,6 +56,12 @@ export default class App extends Component {
   loadMovies = () => {
     if (this.state.text !== null) {
       const moveData = new MoveApp()
+      moveData.getGenreList().then((data) => {
+        const { genres } = data
+        this.setState({
+          genreList: genres,
+        })
+      })
       moveData
         .searchMovies(this.state.text, this.state.page.currentPage)
         .then((data) => {
@@ -116,7 +123,7 @@ export default class App extends Component {
           </section>
           <section className="main">
             {errLoading}
-            <ListItem text={this.state.text} movies={this.state.movies} />
+            <ListItem genreList={this.state.genreList} text={this.state.text} movies={this.state.movies} />
           </section>
           <section className="footer">
             <PaginationItem

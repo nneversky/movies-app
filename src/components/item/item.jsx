@@ -5,10 +5,12 @@ import { parseISO, format } from 'date-fns'
 import MoveApp from '../../services'
 
 import undefinedImg from './pictures/undefined-img.jpeg'
+import React from 'react'
 
-const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
+const Item = ({ genreList, poster_path, title, overview, release_date, vote_average, genre_ids }) => {
   const { Title, Text } = Typography
   const { Header, Content, Sider, Footer } = Layout
+  const moveData = new MoveApp()
 
   const DateTime = () => {
     try {
@@ -16,6 +18,23 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
     } catch (e) {
       return 'Unknown date'
     }
+  }
+
+  const GetGenreList = () => {
+    if (genre_ids.length === 0) return <Text style={genreStyles}>Unknown genre</Text>
+
+    const newIds = genre_ids.length > 3 ? genre_ids.slice(0, 3) : genre_ids
+
+    return (
+      <React.Fragment>
+        {newIds.map((idGenre) => {
+          return genreList.map((idListGenre) => {
+            const { id, name } = idListGenre
+            if (id === idGenre) return <Text key={new Date().toISOString()} style={genreStyles}>{name}</Text>
+          })
+        })}
+      </React.Fragment>
+    )
   }
 
   const GetSliceOverview = ({ overview, maxLength }) => {
@@ -31,8 +50,6 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
   }
 
   const LoadingImage = () => {
-    const moveData = new MoveApp()
-
     const getImage = (path) => {
       return (
         <Image
@@ -63,11 +80,11 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
     letterSpacing: '0%',
     border: '1px #D9D9D9 solid',
     borderRadius: '2px',
-    width: '46px',
     height: '20px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '5px',
   }
 
   const textStyles = {
@@ -128,8 +145,7 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
           <Content style={{ backgroundColor: '#FFFFFF' }}>
             <section className="content">
               <div className="content__genre">
-                <Text style={genreStyles}>Action</Text>
-                <Text style={genreStyles}>Drama</Text>
+                <GetGenreList />
               </div>
               <div className="content__text">
                 <Text style={textStyles}>

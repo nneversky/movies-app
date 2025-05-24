@@ -4,7 +4,7 @@ import Item from '../item'
 import './listItem.css'
 import nothingFound from './pictures/nothing-found.png'
 
-const ListItem = ({ text, movies }) => {
+const ListItem = ({ genreList, text, movies }) => {
   let arr = []
   if (movies !== null && text !== '') {
     if (Object.keys(movies).length === 0)
@@ -12,15 +12,17 @@ const ListItem = ({ text, movies }) => {
     return (
       <section className="movies">
         {movies.map((value) => {
-          const { poster_path, title, overview, release_date, vote_average, id } = value
+          const { poster_path, title, overview, release_date, vote_average, id, genre_ids = null } = value
           arr.push(
             <Col key={id}>
               <Item
+                genreList={genreList}
                 poster_path={poster_path}
                 title={title}
                 overview={overview}
                 release_date={release_date}
                 vote_average={vote_average}
+                genre_ids={genre_ids}
               />
             </Col>
           )
