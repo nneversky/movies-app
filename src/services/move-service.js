@@ -3,8 +3,8 @@ export default class MoveApp {
   _baseUrl = 'https://api.themoviedb.org/3'
   _baseUrlImg = 'https://image.tmdb.org/t/p/original'
 
-  async searchMoves(query) {
-    const res = await fetch(`${this._baseUrl}/search/movie?query=${query}&api_key=${this._APIkey}`)
+  async searchMovies(query, currentPage = 1) {
+    const res = await fetch(`${this._baseUrl}/search/movie?query=${query}&api_key=${this._APIkey}&page=${currentPage}`)
     if (!res.ok) throw new Error(res.status)
     return await res.json()
   }

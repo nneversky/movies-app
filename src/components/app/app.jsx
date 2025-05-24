@@ -1,25 +1,48 @@
 import React, { Component } from 'react'
 import { Offline, Online } from 'react-detect-offline'
 import { Alert, Image } from 'antd'
+import _ from 'lodash'
+
+import offlineErrImg from './pictures/offline-err.jpg'
 import MoveApp from '../../services'
 import ListItem from '../listItem'
 import ErrorItem from '../errorItem'
+import PaginationItem from '../PaginationItem'
+import InputItem from '../inputItem'
 import './app.css'
-import offlineErrImg from './pictures/offline-err.jpg'
 
 export default class App extends Component {
   state = {
-    moves: null,
+    movies: null,
     error: { errorStatus: false, errorCode: null },
+    page: { currentPage: 1, totalPages: null },
+    showPagination: false,
+    text: null,
   }
 
   componentDidMount() {
     this.loadMovies()
   }
 
-  onLoaded = ({ results }) => {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.page.currentPage !== this.state.page.currentPage) {
+      this.loadMovies()
+      window.scrollTo(0, 0)
+    } else if (prevState.showPagination !== this.state.showPagination) {
+      this.loadMovies()
+    }
+  }
+
+  onLoaded = (data) => {
     this.setState({
-      moves: results,
+      movies: data.results,
+      page: { currentPage: this.state.page.currentPage, totalPages: data.total_pages },
+    })
+  }
+
+  onTogglePage = (page) => {
+    this.setState({
+      page: { currentPage: page, totalPages: this.state.page.totalPages },
     })
   }
 
@@ -30,18 +53,39 @@ export default class App extends Component {
   }
 
   loadMovies = () => {
-    const moveData = new MoveApp()
-    moveData
-      .searchMoves('return')
-      .then((data) => {
-        this.onLoaded(data)
-      })
-      .catch((err) => this.onError(err))
+    if (this.state.text !== null) {
+      const moveData = new MoveApp()
+      moveData
+        .searchMovies(this.state.text, this.state.page.currentPage)
+        .then((data) => {
+          if (this.state.text === null || this.state.text === '' || Object.keys(data.results).length === 0) {
+            this.setState({
+              showPagination: false,
+            })
+          } else {
+            this.setState({
+              showPagination: true,
+            })
+          }
+          this.onLoaded(data)
+        })
+        .catch((err) => this.onError(err))
+    }
+  }
+
+  resetDefaultState = () => {
+    this.setState({
+      movies: null,
+      error: { errorStatus: false, errorCode: null },
+      page: { currentPage: 1, totalPages: null },
+      showPagination: false,
+      text: null,
+    })
   }
 
   OfflineError = () => {
     return (
-      <div className="offline--error">
+      <div className="offline-error">
         <Alert
           style={{ marginBottom: '5px' }}
           message="Error"
@@ -49,10 +93,17 @@ export default class App extends Component {
           showIcon
           type="error"
         />
-        <Image style={{ borderRadius: '1%' }} preview={false} src={offlineErrImg} />
+        <Image style={{ borderRadius: '1%', width: '500px', height: 'auto' }} preview={false} src={offlineErrImg} />
       </div>
     )
   }
+
+  handleChange = _.debounce((value) => {
+    if (value === '') this.resetDefaultState()
+    this.setState({ text: value }, () => {
+      this.loadMovies()
+    })
+  }, 300)
 
   render() {
     const errLoading = this.state.error.errorStatus ? <ErrorItem error={this.state.error} /> : null
@@ -60,8 +111,20 @@ export default class App extends Component {
     return (
       <div className="container">
         <Online>
-          {errLoading}
-          <ListItem moves={this.state.moves} />
+          <section className="header-input">
+            <InputItem inputText={this.text} handleChange={this.handleChange} />
+          </section>
+          <section className="main">
+            {errLoading}
+            <ListItem text={this.state.text} movies={this.state.movies} />
+          </section>
+          <section className="footer">
+            <PaginationItem
+              showPagination={this.state.showPagination}
+              page={this.state.page}
+              onTogglePage={this.onTogglePage}
+            />
+          </section>
         </Online>
         <Offline>
           <this.OfflineError />

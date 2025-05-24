@@ -4,14 +4,27 @@ body {
 	padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .container {
+  margin-top: 40px;
+}
+
+.header-input {
+  margin: 0 auto;
+  width: 50vw;
+}
+
+.main {
     display: flex;
     justify-content: center;
 }
 
-.offline--error {
+.offline-error {
+    width: 500px;
+    height: auto;
     transform: translateY(50px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    margin: 0 auto;
 }

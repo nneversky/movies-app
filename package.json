@@ -1,6 +1,7 @@
 {
   "name": "movies-app",
   "author": "nneversky",
+  "description": "Movie search app with React & MovieDB API. Fetches and displays films with clean UI and code quality tools.",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,6 +11,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.25.1",
     "date-fns": "^4.1.0",
+    "lodash": "^4.17.21",
     "react": "^19.1.0",
     "react-detect-offline": "^2.4.5",
     "react-dom": "^19.1.0",

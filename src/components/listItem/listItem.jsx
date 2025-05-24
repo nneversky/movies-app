@@ -1,14 +1,17 @@
-import { Row, Col } from 'antd'
+import { Row, Col, Image } from 'antd'
 
 import Item from '../item'
 import './listItem.css'
+import nothingFound from './pictures/nothing-found.png'
 
-const ListItem = ({ moves }) => {
+const ListItem = ({ text, movies }) => {
   let arr = []
-  if (moves !== null) {
+  if (movies !== null && text !== '') {
+    if (Object.keys(movies).length === 0)
+      return <Image style={{ width: '600px', height: 'auto', marginTop: '30px' }} preview={false} src={nothingFound} />
     return (
-      <section className="moves">
-        {moves.map((value) => {
+      <section className="movies">
+        {movies.map((value) => {
           const { poster_path, title, overview, release_date, vote_average, id } = value
           arr.push(
             <Col key={id}>
@@ -25,7 +28,7 @@ const ListItem = ({ moves }) => {
             const newArr = [...arr]
             arr = []
             return (
-              <div key={id} className="moves__row">
+              <div key={id} className="movies-row">
                 <Row gutter={30}>{newArr}</Row>
               </div>
             )

@@ -1,3 +1,4 @@
-.error--item {
+.error-item {
     transform: translateY(50px);
+    margin-bottom: 100px;
 }

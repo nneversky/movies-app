@@ -4,7 +4,7 @@ import { parseISO, format } from 'date-fns'
 
 import MoveApp from '../../services'
 
-import undefinedImg from './pictures/undefined__img.png'
+import undefinedImg from './pictures/undefined-img.jpeg'
 
 const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
   const { Title, Text } = Typography
@@ -30,12 +30,6 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
     }
   }
 
-  const GetSliceTitle = ({ title, maxLength }) => {
-    if (maxLength > title.length) return title
-
-    return `${title.slice(0, maxLength).trim()}...`
-  }
-
   const LoadingImage = () => {
     const moveData = new MoveApp()
 
@@ -43,7 +37,7 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
       return (
         <Image
           placeholder={
-            <div className="loading--image">
+            <div className="loading-image">
               <Spin size="big" style={{ transform: 'scale(2)' }} />
             </div>
           }
@@ -105,8 +99,12 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
           <Header style={{ backgroundColor: '#FFFFFF' }}>
             <div className="header">
               <Title style={titleStyles} level={5}>
-                <div title={title} className="header__title">
-                  <GetSliceTitle title={title} maxLength={16} />
+                <div
+                  title={title}
+                  style={{ overflow: 'hidden', width: '190px', textOverflow: 'ellipsis' }}
+                  className="header__title"
+                >
+                  <span>{title}</span>
                 </div>
               </Title>
               <Text
@@ -122,7 +120,7 @@ const Item = ({ poster_path, title, overview, release_date, vote_average }) => {
                 <DateTime />
               </Text>
             </div>
-            <div className="vote__average">
+            <div className="vote-average">
               <Text style={textStyles}>{vote_average.toFixed(1)}</Text>
             </div>
           </Header>
