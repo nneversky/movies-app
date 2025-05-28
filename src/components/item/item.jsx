@@ -1,38 +1,61 @@
 import './item.css'
-import { Image, Typography, Layout, Spin } from 'antd'
+import { Image, Typography, Layout, Spin, Rate } from 'antd'
 import { parseISO, format } from 'date-fns'
-
-import MoveApp from '../../services'
-
-import undefinedImg from './pictures/undefined-img.jpeg'
 import React from 'react'
 
-const Item = ({ genreList, poster_path, title, overview, release_date, vote_average, genre_ids }) => {
+import MoveApp from '../../services'
+import { Consumer } from '../movesApiContext'
+
+import undefinedImg from './pictures/undefined-img.jpeg'
+
+const Item = ({
+  poster_path,
+  title,
+  overview,
+  release_date,
+  vote_average,
+  genre_ids,
+  id,
+  rating,
+  handleAddRating,
+  stateTabs,
+}) => {
   const { Title, Text } = Typography
   const { Header, Content, Sider, Footer } = Layout
   const moveData = new MoveApp()
 
   const DateTime = () => {
     try {
-      return format(parseISO(release_date), 'MMMM d, y')
+      return <div className="header_data">{format(parseISO(release_date), 'MMMM d, y')}</div>
     } catch (e) {
-      return 'Unknown date'
+      return <div className="header_data">Unknown date</div>
     }
   }
 
   const GetGenreList = () => {
-    if (genre_ids.length === 0) return <Text style={genreStyles}>Unknown genre</Text>
-
-    const newIds = genre_ids.length > 3 ? genre_ids.slice(0, 3) : genre_ids
-
     return (
       <React.Fragment>
-        {newIds.map((idGenre) => {
-          return genreList.map((idListGenre) => {
-            const { id, name } = idListGenre
-            if (id === idGenre) return <Text key={new Date().toISOString()} style={genreStyles}>{name}</Text>
-          })
-        })}
+        <Consumer>
+          {(genreList) => {
+            if (genre_ids !== null && genreList !== null) {
+              if (genre_ids.length === 0) return <Text style={genreStyles}>Unknown genre</Text>
+              const newIds = genre_ids.length > 3 ? genre_ids.slice(0, 3) : genre_ids
+
+              return newIds.map((idGenre) => {
+                return genreList.map((idListGenre) => {
+                  const { id, name } = idListGenre
+                  if (id === idGenre) {
+                    return (
+                      <Text key={new Date().toISOString()} style={genreStyles}>
+                        {name}
+                      </Text>
+                    )
+                  }
+                })
+              })
+            }
+          }}
+        </Consumer>
       </React.Fragment>
     )
   }
@@ -52,15 +75,24 @@ const Item = ({ genreList, poster_path, title, overview, release_date, vote_aver
   const LoadingImage = () => {
     const getImage = (path) => {
       return (
-        <Image
-          placeholder={
-            <div className="loading-image">
-              <Spin size="big" style={{ transform: 'scale(2)' }} />
-            </div>
-          }
-          style={{ height: '279px', width: '200px' }}
-          src={path}
-        />
+        <div className="item__image">
+          <Image
+            placeholder={
+              <div className="loading-image">
+                <Spin
+                  style={window.matchMedia('(min-width: 993px)').matches ? { transform: 'scale(2)' } : {}}
+                  size="big"
+                />
+              </div>
+            }
+            style={
+              window.matchMedia('(min-width: 993px)').matches
+                ? { height: '279px', width: '200px' }
+                : { height: '91px', width: '60px' }
+            }
+            src={path}
+          />
+        </div>
       )
     }
 
@@ -68,6 +100,24 @@ const Item = ({ genreList, poster_path, title, overview, release_date, vote_aver
       return getImage(moveData.searchImg(poster_path))
     } else {
       return getImage(undefinedImg)
+    }
+  }
+
+  const voteAverageClassName = (num) => {
+    num = Number(num)
+    const className = 'vote-average'
+
+    switch (true) {
+      case num >= 0 && num < 3:
+        return `${className} color--0-3`
+      case num >= 3 && num < 5:
+        return `${className} color--3-5`
+      case num >= 5 && num < 7:
+        return `${className} color--3-5`
+      case num > 7:
+        return `${className} color--7`
+      default:
+        return null
     }
   }
 
@@ -105,10 +155,78 @@ const Item = ({ genreList, poster_path, title, overview, release_date, vote_aver
     letterSpacing: '0%',
   }
 
+  if (window.matchMedia('(min-width: 992px)').matches) {
+    return (
+      <section className="item">
+        <Layout>
+          <Sider
+            width={window.matchMedia('(min-width: 992px)').matches ? 200 : 60}
+            style={{ backgroundColor: '#FFFFFF' }}
+          >
+            <LoadingImage />
+          </Sider>
+
+          <Layout>
+            <Header style={{ backgroundColor: '#FFFFFF' }}>
+              <div className="header">
+                <Title style={titleStyles} level={5}>
+                  <div
+                    title={title}
+                    style={{ overflow: 'hidden', width: '190px', textOverflow: 'ellipsis' }}
+                    className="header__title"
+                  >
+                    <span>{title}</span>
+                  </div>
+                </Title>
+                <Text
+                  style={{
+                    color: '#827E7E',
+                    fontFamily: 'Inter UI, sans-serif',
+                    fontWeight: '400',
+                    fontSize: '12px',
+                    lineHeight: '22px',
+                    letterSpacing: '0%',
+                  }}
+                >
+                  <DateTime />
+                </Text>
+              </div>
+              <div className={voteAverageClassName(vote_average)}>
+                <Text style={textStyles}>{vote_average.toFixed(1)}</Text>
+              </div>
+            </Header>
+
+            <Content style={{ backgroundColor: '#FFFFFF' }}>
+              <section className="content">
+                <div className="content__genre">
+                  <GetGenreList />
+                </div>
+                <div className="content__text">
+                  <Text style={textStyles}>
+                    <GetSliceOverview overview={overview} maxLength={170} />
+                  </Text>
+                </div>
+              </section>
+            </Content>
+            <Footer style={{ backgroundColor: '#FFFFFF' }}>
+              <div className="footer__rate">
+                <Rate
+                  style={{ transform: 'translateX(-35px)' }}
+                  onChange={(e) => handleAddRating(id, e)}
+                  defaultValue={rating}
+                  disabled={stateTabs === 'rated' ? true : false}
+                />
+              </div>
+            </Footer>
+          </Layout>
+        </Layout>
+      </section>
+    )
+  }
   return (
     <section className="item">
       <Layout>
-        <Sider style={{ backgroundColor: 'rgba(34, 60, 80, 0.2)' }}>
+        <Sider width={200} style={{ backgroundColor: '#FFFFFF' }}>
           <LoadingImage />
         </Sider>
 
@@ -137,24 +255,32 @@ const Item = ({ genreList, poster_path, title, overview, release_date, vote_aver
                 <DateTime />
               </Text>
             </div>
-            <div className="vote-average">
+            <div className={voteAverageClassName(vote_average)}>
               <Text style={textStyles}>{vote_average.toFixed(1)}</Text>
             </div>
           </Header>
 
-          <Content style={{ backgroundColor: '#FFFFFF' }}>
+          <Content style={{ backgroundColor: '#FFFFFF', height: '150px' }}>
             <section className="content">
               <div className="content__genre">
                 <GetGenreList />
               </div>
               <div className="content__text">
                 <Text style={textStyles}>
-                  <GetSliceOverview overview={overview} maxLength={200} />
+                  <GetSliceOverview overview={overview} maxLength={170} />
                 </Text>
               </div>
             </section>
           </Content>
-          <Footer style={{ backgroundColor: '#FFFFFF' }}></Footer>
+          <Footer style={{ backgroundColor: '#FFFFFF' }}>
+            <div className="footer__rate">
+              <Rate
+                onChange={(e) => handleAddRating(id, e)}
+                defaultValue={rating}
+                disabled={stateTabs === 'rated' ? true : false}
+              />
+            </div>
+          </Footer>
         </Layout>
       </Layout>
     </section>

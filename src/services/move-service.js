@@ -10,8 +10,36 @@ export default class MoveApp {
   }
 
   async getGenreList() {
-    const listGenre = await fetch(`${this._baseUrl}/genre/movie/list?language=en?&api_key=${this._APIkey}`)
-    return await listGenre.json()
+    const res = await fetch(`${this._baseUrl}/genre/movie/list?language=en?&api_key=${this._APIkey}`)
+    if (!res.ok) throw new Error(res.status)
+    return await res.json()
+  }
+
+  async createGuestSession() {
+    const res = await fetch(`${this._baseUrl}/authentication/guest_session/new?api_key=${this._APIkey}`)
+    if (!res.ok) throw new Error(res.status)
+    return await res.json()
+  }
+
+  async addRating(sessionId, moveId, rating) {
+    const res = await fetch(
+      `${this._baseUrl}/movie/${moveId}/rating?api_key=${this._APIkey}&guest_session_id=${sessionId}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ value: rating }),
+      }
+    )
+    if (!res.ok) throw new Error(res.status)
+    return await res.json()
+  }
+
+  async showRatedMovies(sessionId) {
+    const res = await fetch(`${this._baseUrl}/guest_session/${sessionId}/rated/movies?api_key=${this._APIkey}`)
+    if (!res.ok) throw new Error(res.status)
+    return await res.json()
   }
 
   searchImg(url) {

@@ -1,0 +1,16 @@
+.input {
+    margin: 0 auto;
+    width: 49vw;
+}
+
+@media (max-width: 1120px) {
+    .input {
+    width: 70vw;
+    }
+  }
+
+@media (max-width: 768px) {
+    .input {
+    width: 90vw;
+    }
+  }

@@ -9,22 +9,23 @@ html {
 }
 
 .container {
-  margin-top: 40px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .header-input {
   margin: 0 auto;
-  width: 50vw;
+  /* width: 49vw; */
 }
 
-.main {
+.main, .error, .items-tabs {
     display: flex;
     justify-content: center;
 }
 
 .offline-error {
-    width: 500px;
-    height: auto;
-    transform: translateY(50px);
-    margin: 0 auto;
+  width: 236px;
+  height: auto;
+  transform: translateY(150px);
+  margin: 0 auto;
 }
