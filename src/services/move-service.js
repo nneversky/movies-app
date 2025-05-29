@@ -38,8 +38,11 @@ export default class MoveApp {
 
   async showRatedMovies(sessionId) {
     const res = await fetch(`${this._baseUrl}/guest_session/${sessionId}/rated/movies?api_key=${this._APIkey}`)
-    if (!res.ok) throw new Error(res.status)
-    return await res.json()
+    if (!res.ok && res.status !== 404) {
+      return new Error(res.status)
+    } else {
+      return await res.json()
+    }
   }
 
   searchImg(url) {

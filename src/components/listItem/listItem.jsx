@@ -19,7 +19,11 @@ const ListItem = ({ text = '_', movies, handleAddRating, stateTabs = 'search', r
   if (movies !== null && text !== '') {
     counter = movies.length
     if (Object.keys(movies).length === 0)
-      return <Image style={{ width: '600px', height: 'auto', marginTop: '30px' }} preview={false} src={nothingFound} />
+      return (
+        <div className="nothing-image">
+          <Image preview={false} src={nothingFound} />
+        </div>
+      )
     return (
       <section className="movies">
         {movies.map((value) => {

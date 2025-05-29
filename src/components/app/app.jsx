@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { Offline, Online } from 'react-detect-offline'
 import { Alert, Image, Tabs } from 'antd'
 import _ from 'lodash'
 
@@ -30,8 +29,8 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.handleShowRatedMovies()
     this.addGuestSession()
+    this.handleShowRatedMovies()
     this.loadMovies()
   }
 
@@ -45,7 +44,7 @@ export default class App extends Component {
       this.addGuestSession()
       this.loadMovies()
       this.handleShowRatedMovies()
-    } else if (JSON.stringify(prevState.ratedMovies) != JSON.stringify(this.state.ratedMovies)) {
+    } else if (JSON.stringify(prevState.ratedMovies) !== JSON.stringify(this.state.ratedMovies)) {
       this.loadMovies()
       this.handleShowRatedMovies()
     }
@@ -89,7 +88,7 @@ export default class App extends Component {
         .showRatedMovies(this.state.guestSessionId)
         .then((data) => {
           const { results, page, total_pages, success = true } = data
-          if (success) {
+          if (success && JSON.stringify(results) !== JSON.stringify(this.state.ratedMovies)) {
             this.setState(
               {
                 ratedMovies: results,
@@ -116,11 +115,6 @@ export default class App extends Component {
       this.loadMovies()
     })
   }, 300)
-
-  items = [
-    { key: 'search', label: 'Search' },
-    { key: 'rated', label: 'Rated' },
-  ]
 
   handleChangeTabs = (key) => {
     this.setState({
@@ -156,6 +150,8 @@ export default class App extends Component {
         .catch((err) => this.onError(err))
     }
   }
+
+  setIntervalShowRatedMovies = setInterval(() => this.handleShowRatedMovies(), 1000)
 
   loadMovies = () => {
     if (this.state.text !== null) {
@@ -224,6 +220,12 @@ export default class App extends Component {
 
   render() {
     const errLoading = this.state.error.errorStatus ? <ErrorItem error={this.state.error} /> : null
+    if (!navigator.onLine) return <this.OfflineError />
+
+    const items = [
+      { key: 'search', label: 'Search' },
+      { key: 'rated', label: 'Rated', disabled: this.state.ratedMovies === null ? true : false },
+    ]
 
     if (errLoading) return <div className="error">{errLoading}</div>
 
@@ -231,26 +233,21 @@ export default class App extends Component {
       return (
         <div className="container">
           <Provider value={this.state.genreList}>
-            <Online>
-              <section className="header-input">
-                <div className="items-tabs">
-                  <Tabs items={this.items} onChange={(e) => this.handleChangeTabs(e)} />
-                </div>
-              </section>
-              <section className="main">
-                <ListItem movies={this.state.ratedMovies} stateTabs={this.state.stateTabs} />
-              </section>
-              <section className="footer">
-                <PaginationItem
-                  showPagination={this.state.showPagination}
-                  page={this.state.ratedPages}
-                  onTogglePage={this.onTogglePage}
-                />
-              </section>
-            </Online>
-            <Offline>
-              <this.OfflineError />
-            </Offline>
+            <section className="header-input">
+              <div className="items-tabs">
+                <Tabs items={items} onChange={(e) => this.handleChangeTabs(e)} />
+              </div>
+            </section>
+            <section className="main">
+              <ListItem movies={this.state.ratedMovies} stateTabs={this.state.stateTabs} />
+            </section>
+            <section className="footer">
+              <PaginationItem
+                showPagination={this.state.showPagination}
+                page={this.state.ratedPages}
+                onTogglePage={this.onTogglePage}
+              />
+            </section>
           </Provider>
         </div>
       )
@@ -259,32 +256,27 @@ export default class App extends Component {
     return (
       <div className="container">
         <Provider value={this.state.genreList}>
-          <Online>
-            <section className="header-input">
-              <div className="items-tabs">
-                <Tabs items={this.items} onChange={(e) => this.handleChangeTabs(e)} />
-              </div>
-              <InputItem stateText={this.state.stateText} handleText={this.handleText} />
-            </section>
-            <section className="main">
-              <ListItem
-                text={this.state.text}
-                movies={this.state.movies}
-                handleAddRating={this.handleAddRating}
-                ratedMovies={this.state.ratedMovies}
-              />
-            </section>
-            <section className="footer">
-              <PaginationItem
-                showPagination={this.state.showPagination}
-                page={this.state.page}
-                onTogglePage={this.onTogglePage}
-              />
-            </section>
-          </Online>
-          <Offline>
-            <this.OfflineError />
-          </Offline>
+          <section className="header-input">
+            <div className="items-tabs">
+              <Tabs items={items} onChange={(e) => this.handleChangeTabs(e)} />
+            </div>
+            <InputItem stateText={this.state.stateText} handleText={this.handleText} />
+          </section>
+          <section className="main">
+            <ListItem
+              text={this.state.text}
+              movies={this.state.movies}
+              handleAddRating={this.handleAddRating}
+              ratedMovies={this.state.ratedMovies}
+            />
+          </section>
+          <section className="footer">
+            <PaginationItem
+              showPagination={this.state.showPagination}
+              page={this.state.page}
+              onTogglePage={this.onTogglePage}
+            />
+          </section>
         </Provider>
       </div>
     )
