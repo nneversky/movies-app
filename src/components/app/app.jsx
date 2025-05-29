@@ -154,19 +154,20 @@ export default class App extends Component {
   setIntervalShowRatedMovies = setInterval(() => this.handleShowRatedMovies(), 1000)
 
   loadMovies = () => {
+    const moveData = new MoveApp()
+    moveData
+      .getGenreList()
+      .then((data) => {
+        const { genres } = data
+        this.setState({
+          genreList: genres,
+        })
+      })
+      .catch((err) => {
+        this.onError(err)
+      })
+
     if (this.state.text !== null) {
-      const moveData = new MoveApp()
-      moveData
-        .getGenreList()
-        .then((data) => {
-          const { genres } = data
-          this.setState({
-            genreList: genres,
-          })
-        })
-        .catch((err) => {
-          this.onError(err)
-        })
       moveData
         .searchMovies(this.state.text, this.state.page.currentPage)
         .then((data) => {

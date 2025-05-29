@@ -15,12 +15,16 @@ html {
 
 .header-input {
   margin: 0 auto;
-  /* width: 49vw; */
 }
 
 .main, .error, .items-tabs {
     display: flex;
     justify-content: center;
+}
+
+.main {
+  margin: 0;
+  padding: 0;
 }
 
 .offline-error {
