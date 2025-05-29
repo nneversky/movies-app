@@ -1,8 +1,8 @@
-## Movies App
-#Description
+### Movies App
+## Description
 This project is a movie search application built using the MovieDB API. The initial phase focuses on fetching and displaying a list of movies based on the keyword "return" without implementing search functionality yet.
 
-Important Note:
+## Important Note:
 The API server might be blocked for some users in Russia. If you encounter registration issues, we recommend using a VPN (e.g., Zen Mate for Chrome or AD Guard with 3GB free monthly traffic). Remember to disable the VPN after development to restore internet speed.
 
 Features (Initial Phase)
